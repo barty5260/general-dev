@@ -1,31 +1,24 @@
 import pandas as pd
 import numpy as np
 
-# Create df_main
-df_main = pd.DataFrame({
-    'ID': ['A', 'B', 'C', 'D', 'E'],
-    'F': np.random.randint(0, 10, 5)
+# Create a sample dataframe
+df = pd.DataFrame({
+    'A': np.random.randint(0, 10, 5),
+    'B': np.random.randint(0, 10, 5),
+    'C': np.random.randint(0, 10, 5),
+    'D': np.random.randint(0, 10, 5),
+    'E': np.random.randint(0, 10, 5)
 })
 
-# Create df_lag1
-df_lag1 = pd.DataFrame({
-    'ID': ['A', 'B', 'C', 'D', 'E'],
-    'F_lag1': np.random.randint(0, 10, 5)
-})
+# Calculate the rolling mean of the A, B, and C rows using a window size of 3
+window_size = 3
+rolling_mean = df[['A', 'B', 'C']].rolling(window_size, min_periods=1, axis=0).mean()
 
-# Create df_lag2
-df_lag2 = pd.DataFrame({
-    'ID': ['A', 'B', 'C', 'D', 'E'],
-    'F_lag2': np.random.randint(0, 10, 5)
-})
+# Add the rolling mean to the original dataframe in a new column named 'F'
+df['F'] = rolling_mean.iloc[-1, :]
 
-# Merge the dataframes
-merged_df = pd.merge(df_main, df_lag1, on='ID')
-merged_df = pd.merge(merged_df, df_lag2, on='ID')
+# Alternatively, you can assign the rolling mean to the 'F' column directly
+df['F'] = df[['A', 'B', 'C']].rolling(window_size, min_periods=1, axis=0).mean().iloc[-1, :]
 
-# Calculate the moving average
-merged_df['moving_avg'] = merged_df[['F', 'F_lag1', 'F_lag2']].sum(axis=1) / 3.0
-
-# Keep only ID and moving_avg columns
-merged_df = merged_df[['ID', 'moving_avg']]
-
+'axis=0 (default): specifies that the operation should be performed along the rows, i.e., vertically. For example, calculating the mean of a column or dropping a row.'
+'axis=1: specifies that the operation should be performed along the columns, i.e., horizontally. For example, calculating the mean of a row or dropping a column.'

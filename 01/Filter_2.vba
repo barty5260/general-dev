@@ -1,4 +1,4 @@
-Sub FilterSortZoom()
+Sub FilterSortZoomCopy()
 
     ' Apply filter on row 4
     Rows("4:4").Select
@@ -29,5 +29,10 @@ Sub FilterSortZoom()
 
     ' Change view to 75% zoom
     ActiveWindow.Zoom = 75
+    
+    ' Copy string
+    Dim lastRow As Long
+    lastRow = Range("N" & Rows.Count).End(xlUp).Row
+    Range("N5:N" & lastRow).Value = "specific string or formula"
     
 End Sub
