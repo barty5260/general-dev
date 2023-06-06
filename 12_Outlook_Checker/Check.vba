@@ -1,37 +1,54 @@
 Sub CheckNewMessages()
-    Dim OutlookApp As Object
-    Dim OutlookNamespace As Object
-    Dim OutlookFolder As Object
-    Dim OutlookMail As Object
+    Dim olApp As Outlook.Application
+    Dim olNamespace As Outlook.Namespace
+    Dim olFolder As Outlook.Folder
+    Dim olSubFolder As Outlook.Folder
+    Dim olItems As Outlook.Items
+    Dim olMail As Outlook.MailItem
+    Dim count As Integer
     
-    ' Create Outlook application object
-    Set OutlookApp = CreateObject("Outlook.Application")
+    ' Create the Outlook application and get the namespace
+    Set olApp = New Outlook.Application
+    Set olNamespace = olApp.GetNamespace("MAPI")
     
-    ' Get the MAPI namespace
-    Set OutlookNamespace = OutlookApp.GetNamespace("MAPI")
+    ' Get the Test_Figures folder
+    Set olFolder = olNamespace.GetDefaultFolder(olFolderInbox).Folders("Test_Figures")
     
-    ' Get the inbox folder named "Test"
-    On Error Resume Next
-    Set OutlookFolder = OutlookNamespace.GetDefaultFolder(6).Folders("Test")
-    On Error GoTo 0
-    
-    ' Check if the folder exists
-    If Not OutlookFolder Is Nothing Then
-        ' Loop through the items in the folder
-        For Each OutlookMail In OutlookFolder.Items
-            ' Check if the item is an unread email
-            If OutlookMail.UnRead Then
-                ' Process the new email as needed
-                MsgBox "New email received: " & OutlookMail.Subject
-            End If
-        Next OutlookMail
+    ' Check if the Test_Figures folder exists
+    If Not olFolder Is Nothing Then
+        ' Get the To_Check subfolder
+        Set olSubFolder = olFolder.Folders("To_Check")
+        
+        ' Check if the To_Check subfolder exists
+        If Not olSubFolder Is Nothing Then
+            ' Get the collection of items in the To_Check subfolder
+            Set olItems = olSubFolder.Items
+            
+            ' Loop through each item in the collection
+            For Each olMail In olItems
+                ' Check if the item is a mail item and is unread
+                If TypeOf olMail Is Outlook.MailItem And olMail.UnRead Then
+                    ' Process the unread mail item
+                    ' Replace this line with your own code to handle the unread mail item
+                    
+                    ' Increase the count of new messages
+                    count = count + 1
+                End If
+            Next olMail
+            
+            ' Display the count of new messages
+            MsgBox count & " new messages found in the To_Check folder."
+        Else
+            MsgBox "The To_Check folder does not exist."
+        End If
     Else
-        MsgBox "The 'Test' folder does not exist."
+        MsgBox "The Test_Figures folder does not exist."
     End If
     
-    ' Clean up objects
-    Set OutlookMail = Nothing
-    Set OutlookFolder = Nothing
-    Set OutlookNamespace = Nothing
-    Set OutlookApp = Nothing
+    ' Release the Outlook objects
+    Set olItems = Nothing
+    Set olSubFolder = Nothing
+    Set olFolder = Nothing
+    Set olNamespace = Nothing
+    Set olApp = Nothing
 End Sub
